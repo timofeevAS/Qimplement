@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
 
 
-class Qubit(metaclass=ABCMeta):
+class QubitInterface(metaclass=ABCMeta):
     @abstractmethod
     def h(self): pass
 
@@ -15,11 +15,11 @@ class Qubit(metaclass=ABCMeta):
 
 class QuantumDevice(metaclass=ABCMeta):
     @abstractmethod
-    def allocate_qubit(self) -> Qubit:
+    def allocate_qubit(self) -> QubitInterface:
         pass
 
     @abstractmethod
-    def deallocate_qubit(self, qubit: Qubit):
+    def deallocate_qubit(self, qubit: QubitInterface):
         pass
 
     @contextmanager
