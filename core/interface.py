@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
 
-
+# TODO: create class for implement state of qubit
 class QubitInterface(metaclass=ABCMeta):
     @abstractmethod
     def h(self): pass
