@@ -12,6 +12,15 @@ class QubitInterface(metaclass=ABCMeta):
     @abstractmethod
     def reset(self): pass
 
+    @abstractmethod
+    def pauli_x(self): pass
+
+    @abstractmethod
+    def pauli_y(self): pass
+
+    @abstractmethod
+    def pauli_z(self): pass
+
 
 class QuantumDevice(metaclass=ABCMeta):
     @abstractmethod
