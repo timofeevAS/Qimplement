@@ -22,13 +22,13 @@ class QubitInterface(metaclass=ABCMeta):
     def pauli_z(self): pass
 
     @abstractmethod
-    def rotate_x(self): pass
+    def rotate_x(self, angle): pass
 
     @abstractmethod
-    def rotate_y(self): pass
+    def rotate_y(self, angle): pass
 
     @abstractmethod
-    def rotate_z(self): pass
+    def rotate_z(self, angle): pass
 
 
 class QuantumDevice(metaclass=ABCMeta):
