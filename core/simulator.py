@@ -12,6 +12,9 @@ class SimulatedQubit(QubitInterface):
     def h(self):
         self.state = H @ self.state
 
+    def x(self):
+        self.state = PAULI_X @ self.state
+
     def measure(self) -> bool:
         probability_zero = np.abs(self.state[0, 0]) ** 2  # probability measure ZERO (false)
         is_measured_zero = np.random.random() <= probability_zero
@@ -44,6 +47,15 @@ class SimulatedQubit(QubitInterface):
 
     def reset(self):
         self.state = KET_0.copy()
+
+    def ket0_p(self) -> float:
+        probability_zero = np.abs(self.state[0, 0]) ** 2
+        return probability_zero
+
+    def ket1_p(self) -> float:
+        probability_one = np.abs(self.state[1, 0]) ** 2 # Or 1 - P(ket0)
+        return probability_one
+
 
 
 class SingleQubitSimulator(QuantumDevice):

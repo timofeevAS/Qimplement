@@ -7,6 +7,9 @@ class QubitInterface(metaclass=ABCMeta):
     def h(self): pass
 
     @abstractmethod
+    def x(self): pass
+
+    @abstractmethod
     def measure(self) -> bool: pass
 
     @abstractmethod
@@ -30,6 +33,10 @@ class QubitInterface(metaclass=ABCMeta):
     @abstractmethod
     def rotate_z(self, angle): pass
 
+    def ket0_p(self) -> float: pass
+
+    def ket1_p(self) -> float: pass
+
 
 class QuantumDevice(metaclass=ABCMeta):
     @abstractmethod
@@ -41,7 +48,7 @@ class QuantumDevice(metaclass=ABCMeta):
         pass
 
     @contextmanager
-    def using_qubit(self):
+    def using_qubit(self) -> QubitInterface:
         qubit = self.allocate_qubit()
         try:
             yield qubit
