@@ -5,6 +5,9 @@ from core.simulator import SingleQubitSimulator, SimulatedQubit
 
 
 def qrng(device: QuantumDevice) -> bool:
+    # Quantum circuit:
+    # |0> --->[H]--->[Measure]
+
     with device.using_qubit() as q:
         q.h() # Apply Hadamard matrix to qubit
         return q.measure() # Measure qubit to get zero or one (True or False)
