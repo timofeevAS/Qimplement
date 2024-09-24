@@ -34,7 +34,6 @@ def convert_to_hex(bits: List[bool]) -> str:
         2
     ))
 
-
 def send_single_bit_with_bb84(
         alice_device: QuantumDevice,
         bob_device: QuantumDevice
@@ -64,12 +63,12 @@ def simulate_bb84(n_bits: int) -> list:
 
     while len(key) < n_bits:
         n_rounds += 1
-        ((your_bit, your_basis), (eve_result, eve_basis)) = \
+        ((alice_bit, alice_basis), (bob_result, bob_basis)) = \
             send_single_bit_with_bb84(alice_device, bob_device)
 
-        if your_basis == eve_basis:
-            assert your_bit == eve_result
-            key.append(your_bit)
+        if alice_basis == bob_basis:
+            assert alice_bit == bob_result
+            key.append(alice_bit)
 
     print(f"Took {n_rounds} rounds to generate a {n_bits}-bit key.")
 
