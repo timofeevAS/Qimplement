@@ -9,6 +9,13 @@ class SimulatedQubit(QubitInterface):
         self.state = np.array([[0], [0]], dtype=complex)
         self.reset()
 
+    def copy(self) -> "SimulatedQubit":
+        q = SimulatedQubit()
+        q.state = self.state
+        return q
+
+
+
     def h(self):
         self.state = H @ self.state
 
