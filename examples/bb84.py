@@ -36,28 +36,28 @@ def convert_to_hex(bits: List[bool]) -> str:
 
 
 def send_single_bit_with_bb84(
-        your_device: QuantumDevice,
-        eve_device: QuantumDevice
+        alice_device: QuantumDevice,
+        bob_device: QuantumDevice
 ) -> tuple:
     [your_message, your_basis] = [
-        sample_random_bit(your_device) for _ in range(2)
+        sample_random_bit(alice_device) for _ in range(2)
     ]
 
-    eve_basis = sample_random_bit(eve_device)
+    bob_basis = sample_random_bit(bob_device)
 
-    with your_device.using_qubit() as q:
+    with alice_device.using_qubit() as q:
         prepare_message_qubit(your_message, your_basis, q)
 
         # QUBIT SENDING...
 
-        eve_result = measure_message_qubit(eve_basis, q)
+        bob_result = measure_message_qubit(bob_basis, q)
 
-    return (your_message, your_basis), (eve_result, eve_basis)
+    return (your_message, your_basis), (bob_result, bob_basis)
 
 
 def simulate_bb84(n_bits: int) -> list:
-    your_device = SingleQubitSimulator()
-    eve_device = SingleQubitSimulator()
+    alice_device = SingleQubitSimulator()
+    bob_device = SingleQubitSimulator()
 
     key = []
     n_rounds = 0
@@ -65,7 +65,7 @@ def simulate_bb84(n_bits: int) -> list:
     while len(key) < n_bits:
         n_rounds += 1
         ((your_bit, your_basis), (eve_result, eve_basis)) = \
-            send_single_bit_with_bb84(your_device, eve_device)
+            send_single_bit_with_bb84(alice_device, bob_device)
 
         if your_basis == eve_basis:
             assert your_bit == eve_result
@@ -94,6 +94,6 @@ if __name__ == "__main__":
     print(f"Encrypted message:                {convert_to_hex(encrypted_message)}.")
 
     decrypted_message = apply_one_time_pad(encrypted_message, key)
-    print(f"Eve decrypted to get:             {convert_to_hex(decrypted_message)}.")
+    print(f"Bob decrypted to get:             {convert_to_hex(decrypted_message)}.")
 
     assert convert_to_hex(message) == convert_to_hex(decrypted_message)
