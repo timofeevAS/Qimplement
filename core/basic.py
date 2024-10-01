@@ -30,6 +30,12 @@ H = np.array([
 
 H2 = np.kron(H, H)
 
+def HN(N: int):
+    H_N = H.copy()
+    for i in range(N - 1):
+        H_N = np.kron(H_N, H)
+    return H_N
+
 X = np.array([[0, 1], [1, 0]])
 
 KET_PLUS = (KET_0 + KET_1) / np.sqrt(2)
