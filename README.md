@@ -10,3 +10,4 @@ with Python and Q# by Sarah Kaiser & Chris Grande;
 3. https://algassert.com/quirk - Quantum circuit simulator;
 4. https://quantum-circuit.com/ - Quantum circuit simulator with many people examples and possibility 
                                   to convert into python code.
+5. https://sunandstuff.com/atest/bloch/ - Bloch sphere simulator, which shows probabilities.
