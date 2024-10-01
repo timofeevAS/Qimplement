@@ -139,9 +139,7 @@ class NQubitSimulator:
         available_qubits = [SimulatedQubit() for _ in range(n)]
         self.state = KET_0
         self.dimension = n
-
-        for i in range(1, n):
-            self.state = np.kron(self.state, available_qubits[i])
+        self.reset() # Call reset() to set |0...0>
 
     def apply_single_qubit_gate(self, gate, qubit_idx: int):
         operation = None
@@ -153,7 +151,7 @@ class NQubitSimulator:
         elif qubit_idx == self.dimension - 1:
             # Generate operation matrix: I x I x ... x G x I x ... x I
             operation = np.eye(2)
-            for i in range(0, self.dimension - 1):
+            for i in range(0, self.dimension - 2):
                 operation = np.kron(operation, np.eye(2))
             operation = np.kron(operation, gate)
         elif 0 < qubit_idx < self.dimension - 1:
@@ -194,5 +192,5 @@ class NQubitSimulator:
 
     def reset(self):
         self.state = KET_0
-        for i in range(self.dimension):
+        for i in range(1, self.dimension):
             self.state = np.kron(self.state, KET_0)
