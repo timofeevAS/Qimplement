@@ -184,7 +184,7 @@ class NQubitSimulator:
         combinations = list(itertools.product([0, 1], repeat=self.dimension))
 
         for i in range(len(combinations)):
-            if combinations[qubit_idx] == 0:
+            if combinations[i][qubit_idx] == 0:
                 prob_zero += np.abs(self.state[i, 0]) ** 2
 
         is_measured_zero = np.random.random() <= prob_zero
