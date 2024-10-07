@@ -96,4 +96,12 @@ QRNG - выставляет кубит $|0\rangle$ в состояние $|+\ran
 
 ## Quantum key distribution <TBD>
 
+### BB84 Explanation <TBD>
+
 ## Deutsch algorithm <TBD>
+
+## Deutsch-Jozsa algorithm <TBD>
+
+## Bernstein-Vazirani algorithm <TBD>
+
+## Simon problem <TBD>
