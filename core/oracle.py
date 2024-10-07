@@ -2,7 +2,7 @@ import numpy as np
 import itertools
 
 
-def generate_oracle_matrix(N, boolean_function):
+def generate_oracle_deutsch_jozsa(N, boolean_function):
     """
     Generate Oracle matrix for {0,1}^n -> {0,1}
 
@@ -47,9 +47,9 @@ if __name__ == '__main__':
         return 0
 
     N = 1
-    oracle = generate_oracle_matrix(1, const_zero)
+    oracle = generate_oracle_deutsch_jozsa(1, const_zero)
     print(np.array(oracle))
 
     N = 2
-    oracle = generate_oracle_matrix(N, xor)
+    oracle = generate_oracle_deutsch_jozsa(N, xor)
     print(np.array(oracle))

@@ -4,7 +4,7 @@ import numpy as np
 from pyexpat.errors import messages
 
 from core.basic import H2, H, KET_01, X, HN
-from core.oracle import generate_oracle_matrix
+from core.oracle import generate_oracle_deutsch_jozsa
 from core.simulator import TwoQubitSimulator, NQubitSimulator
 from examples.deutsch import ORACLE1, ORACLE2, ORACLE3, ORACLE4
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # Example of Deutsch-Jozsa algorithm for N = 3 with Oracle (x1 AND x2)
     def bool_and(x) -> bool:
         return x[0] and x[1]
-    oracle = generate_oracle_matrix(2, bool_and)
+    oracle = generate_oracle_deutsch_jozsa(2, bool_and)
 
     print('Run with next Oracle (AND boolean):')
     print(np.array(oracle))
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     def bool_and(x) -> bool:
         return True
 
-    oracle = generate_oracle_matrix(2, bool_and)
+    oracle = generate_oracle_deutsch_jozsa(2, bool_and)
 
     print('Run with next Oracle (CONST TRUE):')
     print(np.array(oracle))
