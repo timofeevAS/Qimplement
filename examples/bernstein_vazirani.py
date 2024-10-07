@@ -21,7 +21,7 @@ def bernstein_vazirani(sim: NQubitSimulator, oracle) -> List[bool]:
     f: {0,1}^n → {0,1};
     f(x) = s•x = x1s1 XOR x2s2 XOR ... XOE xNsN.
 
-    a - ?
+    s - ?
     """
 
     sim.reset()  # |0...0>
