@@ -18,6 +18,9 @@ KET_01 = np.kron(KET_0, KET_1) # |00>
 KET_10 = np.kron(KET_1, KET_0) # |00>
 KET_11 = np.kron(KET_1, KET_1) # |00>
 
+P_0 = np.array([[1, 0], [0, 0]])  # |0><0|
+P_1 = np.array([[0, 0], [0, 1]])  # |1><1|
+
 '''
 numpy vector describes Hadamard matrix 2 x 2:
 

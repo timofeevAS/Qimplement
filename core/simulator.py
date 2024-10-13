@@ -1,7 +1,7 @@
 import numpy as np
 import itertools
 
-from core.basic import H, KET_0, PAULI_X, PAULI_Y, PAULI_Z, CNOT
+from core.basic import H, KET_0, PAULI_X, PAULI_Y, PAULI_Z, CNOT, P_0, P_1
 from core.interface import QubitInterface, QuantumDevice
 
 
@@ -140,6 +140,7 @@ class NQubitSimulator:
         self.state = KET_0
         self.dimension = n
         self.reset() # Call reset() to set |0...0>
+        self.collapsed = [None for _ in range(n)] # Collapsed qubits.
 
     def apply_single_qubit_gate(self, gate, qubit_idx: int):
         operation = None
@@ -189,6 +190,105 @@ class NQubitSimulator:
 
         is_measured_zero = np.random.random() <= prob_zero
         return bool(0 if is_measured_zero else 1)
+
+    def single_measure(self, qubit_idx: int) -> bool:
+        if qubit_idx >= self.dimension or qubit_idx < 0:
+            raise ValueError(f"Invalid qubit index. Only in range [0;{self.dimension}).")
+
+        if self.collapsed[qubit_idx] is not None:
+            # TODO: Is it correct to return classic bit?
+            return self.collapsed[qubit_idx]
+
+        operator_0 = np.eye(1)
+        operator_1 = np.eye(1)
+
+        for i in range(self.dimension):
+            if i == qubit_idx:
+                operator_0 = np.kron(operator_0, P_0)
+                operator_1 = np.kron(operator_1, P_1)
+            else:
+                operator_0 = np.kron(operator_0, np.eye(2))
+                operator_1 = np.kron(operator_1, np.eye(2))
+
+        projected_state_0 = operator_0 @ self.state
+        probability_0 = np.abs(np.vdot(projected_state_0, projected_state_0))
+
+        is_measured_zero = np.random.random() <= probability_0
+
+        if is_measured_zero:
+            self.state = projected_state_0 / np.sqrt(probability_0)
+            self.collapsed[qubit_idx] = False
+            return False
+        else:
+            projected_state_1 = operator_1 @ self.state
+            probability_1 = np.abs(np.vdot(projected_state_1, projected_state_1))
+            self.state = projected_state_1 / np.sqrt(probability_1)
+            self.collapsed[qubit_idx] = True
+            return True
+
+    def measure_multiple_qubits(self, qubit_indices: list) -> list:
+        """
+        Measure a couple of qubits for one step.
+        :param qubit_indices: List of qubits' indices
+        :return: result
+        """
+        for qubit_idx in qubit_indices:
+            if qubit_idx >= self.dimension or qubit_idx < 0:
+                raise ValueError(f"Invalid qubit index: {qubit_idx}. Only in range [0; {self.dimension}).")
+
+        # All posible qubit variations: |000...000> |000...001> ... |111...111>
+        possible_outcomes = list(itertools.product([0, 1], repeat=len(qubit_indices)))
+
+        probabilities = []
+        projectors = []
+
+        for outcome in possible_outcomes:
+            operator = np.eye(1)
+            outcome_projectors = []
+
+            # Generate porjector operator;
+            for idx, qubit_idx in enumerate(qubit_indices):
+                projector = P_0 if outcome[idx] == 0 else P_1
+                outcome_projectors.append(projector)
+
+            # Kroneker product for each operator
+            for i in range(self.dimension):
+                if i in qubit_indices:
+                    idx_in_measure = qubit_indices.index(i)
+                    operator = np.kron(operator, outcome_projectors[idx_in_measure])
+                else:
+                    operator = np.kron(operator, np.eye(2))
+
+            # Apply projector opertator to system.
+            projected_state = operator @ self.state
+            probability = np.abs(np.vdot(projected_state, projected_state))
+
+            # Save probability for current projector
+            probabilities.append(probability)
+            projectors.append(operator)
+
+        # Normaplize probabilities.
+        total_probability = sum(probabilities)
+        probabilities = [p / total_probability for p in probabilities]
+
+        random_value = np.random.random()
+        cumulative_probability = 0
+        measured_outcome = None
+
+        # Measure results.
+        for idx, prob in enumerate(probabilities):
+            cumulative_probability += prob
+            if random_value <= cumulative_probability:
+                measured_outcome = possible_outcomes[idx]
+                break
+
+        # Collapse
+        projector = projectors[possible_outcomes.index(measured_outcome)]
+        self.state = projector @ self.state / np.sqrt(probabilities[possible_outcomes.index(measured_outcome)])
+        for idx, qubit_idx in enumerate(qubit_indices):
+            self.collapsed[qubit_idx] = measured_outcome[idx]
+
+        return list(measured_outcome)
 
     def reset(self):
         self.state = KET_0
