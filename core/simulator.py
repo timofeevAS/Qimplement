@@ -147,7 +147,7 @@ class NQubitSimulator:
         if qubit_idx == 0:
             # Generate operation matrix: GATE x I x I x ... x I
             operation = gate
-            for i in range(0, self.dimension):
+            for i in range(1, self.dimension):
                 operation = np.kron(operation, np.eye(2))
         elif qubit_idx == self.dimension - 1:
             # Generate operation matrix: I x I x ... x G x I x ... x I
@@ -294,3 +294,58 @@ class NQubitSimulator:
         self.state = KET_0
         for i in range(1, self.dimension):
             self.state = np.kron(self.state, KET_0)
+
+    def apply_n_gates(self, *gates):
+        # Start with the first gate
+        operation = gates[0]
+
+        # Perform Kronecker product for each gate, if no gate provided for a specific qubit, use identity matrix
+        for i in range(1, len(gates)):
+            gate = gates[i]
+            if gate is None:
+                gate = np.eye(2)  # Identity gate for qubits that don't have a specific gate
+            operation = np.kron(operation, gate)
+
+        # Apply the final operation to the quantum state
+        self.state = operation @ self.state
+
+    def get_qubit_state(self, idx: int):
+        if idx < 0 or idx >= self.dimension:
+            raise ValueError(f"Invalid qubit index. Must be in range [0; {self.dimension}).")
+
+        # Инициализируем проекторы для |0> и |1> состояний
+        projector_0 = np.eye(1)  # Начальная единичная матрица для проектора на |0>
+        projector_1 = np.eye(1)  # Начальная единичная матрица для проектора на |1>
+
+        for i in range(self.dimension):
+            if i == idx:
+                projector_0 = np.kron(projector_0, P_0)  # Проектор на |0> для кубита idx
+                projector_1 = np.kron(projector_1, P_1)  # Проектор на |1> для кубита idx
+            else:
+                projector_0 = np.kron(projector_0, np.eye(2))  # Для остальных кубитов — единичная матрица
+                projector_1 = np.kron(projector_1, np.eye(2))
+
+        # Применяем проекторы к текущему состоянию
+        projected_state_0 = projector_0 @ self.state
+        projected_state_1 = projector_1 @ self.state
+
+        # Вычисляем вероятности для |0> и |1>
+        prob_0 = np.abs(np.vdot(projected_state_0, projected_state_0))
+        prob_1 = np.abs(np.vdot(projected_state_1, projected_state_1))
+
+        return {'|0>': prob_0, '|1>': prob_1}
+
+    def controlled_by_measurement(self, gate_if_0, gate_if_1, measured_value, target_qubit_idx: int):
+        """
+        Apply a gate to the target qubit, based on the result of a measured value.
+        :param gate_if_0: The gate to apply if the measured value is 0.
+        :param gate_if_1: The gate to apply if the measured value is 1.
+        :param measured_value: The result of the measurement (0 or 1).
+        :param target_qubit_idx: The index of the qubit to which the gate is applied.
+        """
+        if measured_value == 0:
+            self.apply_single_qubit_gate(gate_if_0, target_qubit_idx)
+        elif measured_value == 1:
+            self.apply_single_qubit_gate(gate_if_1, target_qubit_idx)
+        else:
+            raise ValueError(f"Invalid measured value {measured_value}. Must be 0 or 1.")
