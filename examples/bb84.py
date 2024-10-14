@@ -107,7 +107,7 @@ def apply_one_time_pad(message: List[bool], key: List[bool]) -> List[bool]:
 
 if __name__ == "__main__":
     print("Generating a 100-bit key by simulating BB84...")
-    SIZE=3
+    SIZE=100
     message = list(map(bool, [random.randint(0, 1) for _ in range(SIZE)]))
     key = simulate_bb84(SIZE)
     print(f"Eva key                           {convert_to_hex(EVA_KEY)}.")
