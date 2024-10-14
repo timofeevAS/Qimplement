@@ -26,8 +26,11 @@ def teleport(sim: NQubitSimulator):
     sim.apply_n_gates(np.eye(2), CNOT) # Step 2
 
     # Step 3
-    # Print 'state 1'
-    print(f'State 0, Step3: {sim.get_qubit_state(0)}')
+    # Print 'states'
+    print('Begin...')
+    for i in range(sim.dimension):
+        print(f'State {i}: {sim.get_qubit_state(i)}')
+
     # Apply Step 3 gate
     sim.apply_n_gates(CNOT, np.eye(2))
 
@@ -37,14 +40,14 @@ def teleport(sim: NQubitSimulator):
     # Step 5: Measure qubits 0 and 1
     measurement_results = sim.measure_multiple_qubits([0, 1])
     print(f'Measurements: {measurement_results}')
-
+    print('Teleport...')
     # Step 6: Apply controlled gates based on the measurement results
     # If qubit 1 was measured as 1, apply X gate to qubit 2
     sim.controlled_by_measurement(np.eye(2), PAULI_X, measurement_results[1], 2)
 
     # If qubit 0 was measured as 1, apply Z gate to qubit 2
     sim.controlled_by_measurement(np.eye(2), PAULI_Z, measurement_results[0], 2)
-
+    print('Result...')
     # Final state of the third qubit should be the teleported state
     for i in range(sim.dimension):
         print(f'State {i}: {sim.get_qubit_state(i)}')
