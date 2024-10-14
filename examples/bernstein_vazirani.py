@@ -4,7 +4,7 @@ from core.basic import X, HN
 from core.oracle import generate_oracle_bernstein_vazirani
 from core.simulator import NQubitSimulator
 
-def bernstein_vazirani(sim: NQubitSimulator, oracle) -> List[bool]:
+def bernstein_vazirani(sim: NQubitSimulator, oracle) -> List[int]:
     """
     Bernstein-Vazirani quantum circuit:
     |0> -- ~ -- H -- ORACLE -- H -- M
@@ -30,9 +30,7 @@ def bernstein_vazirani(sim: NQubitSimulator, oracle) -> List[bool]:
     sim.apply_n_qubit_gate(oracle)  # Step 3
     sim.apply_n_qubit_gate(HN(sim.dimension))
 
-    measured = []
-    for i in range(sim.dimension - 1):
-        measured.append(sim.measure(i))
+    measured = sim.measure_multiple_qubits(list(range(sim.dimension-1)))
     return measured
 
 

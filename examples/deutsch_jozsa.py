@@ -27,9 +27,7 @@ def deutsch_jozsa(sim: NQubitSimulator, oracle) -> List[bool]:
     sim.apply_n_qubit_gate(oracle)  # Step 3
     sim.apply_n_qubit_gate(HN(sim.dimension))
 
-    measured = []
-    for i in range(sim.dimension - 1):
-        measured.append(sim.measure(i))
+    measured = sim.measure_multiple_qubits(list(range(sim.dimension - 1)))
     return measured
 
 
