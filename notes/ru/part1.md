@@ -105,3 +105,5 @@ QRNG - выставляет кубит $|0\rangle$ в состояние $|+\ran
 ## Bernstein-Vazirani algorithm <TBD>
 
 ## Simon problem <TBD>
+
+## Quantum teleport <TBD>
