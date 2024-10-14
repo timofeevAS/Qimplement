@@ -88,10 +88,28 @@ if __name__ == '__main__':
     oracle = tensordot_arb(gen_c_operator(0, 3, X), np.eye(2), np.eye(2))
     oracle = tensordot_arb(np.eye(2), np.eye(2), gen_c_operator(0, 3, X)) @ oracle
 
-    for i in range(N*2):
+    measured_y = set()
+
+    ITER_COUNT = N*5
+
+    for i in range(ITER_COUNT):
         sim = NQubitSimulator(N * 2)
         result = simon(sim, oracle)
-        print(f'Measured {N}: {result}')
+        measured_y.add(''.join(map(str,result))) # Convert list to str ex: [1, 0, 1] -> '101'
+
+    measured_y.remove('000')
+    # Print user-friendly SLQ:
+    print(f'Present SLQ by running: {ITER_COUNT}')
+    for y in measured_y:
+        s_idxs = [f's{i}' for i in range(N)]
+        res = ''
+        for idx, bit in enumerate(y):
+            if bit == '1':
+                res += f'{s_idxs[idx]} + '
+
+        res = res.rstrip(' + ') + ' = 0'
+        print(res)
+
 
 
 
