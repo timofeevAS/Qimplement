@@ -1,4 +1,5 @@
 import numpy as np
+from qiskit.transpiler.passes import VF2Layout
 
 '''
 numpy vector describes ket zero: |0>
@@ -77,3 +78,38 @@ def bell_state(state_type='phi_plus'):
         return (1/np.sqrt(2)) * (KET_01 - KET_10)  # |Ψ-⟩
     else:
         raise ValueError("Invalid Bell state type. Choose from 'phi_plus', 'phi_minus', 'psi_plus', 'psi_minus'.")
+
+def CNOT(N, c, t):
+    if c >= t:
+        raise ValueError("CNOT generator is correct only with c < t.")
+    # based on:
+    # https://quantumcomputing.stackexchange.com/questions/4252/how-to-derive-the-cnot-matrix-for-a-3-qubit-system-where-the-control-target-qu
+    # AND
+    # https://quantumcomputing.stackexchange.com/questions/4078/how-to-construct-a-multi-qubit-controlled-z-from-elementary-gates
+
+    # I ⊗c
+    I_c = np.eye(2**c)
+
+    # |0><0| и |1><1|
+    zero_projector = P_0
+    one_projector = P_1
+
+    # X
+    X_gate = PAULI_X
+
+    # I ⊗(t-c-1)
+    I_tc = np.eye(2**(t-c-1))
+
+    # I ⊗(n-t-1)
+    I_nt = np.eye(2**(N-t-1))
+
+    # I^⊗c ⊗ |0><0| ⊗ I^(n-c-1)
+    term1 = np.kron(np.kron(I_c, zero_projector), np.eye(2**(N-c-1)))
+
+    # I^⊗c ⊗ |1><1| ⊗ I^⊗(t-c-1) ⊗ X ⊗ I^⊗(n-t-1)
+    term2 = np.kron(np.kron(np.kron(np.kron(I_c, one_projector), I_tc), X_gate), I_nt)
+
+    # CNOT = term1 + term2
+    CNOT_matrix = term1 + term2
+
+    return CNOT_matrix

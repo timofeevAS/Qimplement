@@ -1,8 +1,9 @@
+from collections import defaultdict
 from typing import List
 
 import numpy as np
 
-from core.basic import X, HN, PAULI_X, KET_0, KET_1
+from core.basic import X, HN, PAULI_X, KET_0, KET_1, CNOT
 from core.oracle import generate_oracle_simon
 from core.simulator import NQubitSimulator
 
@@ -42,74 +43,59 @@ def simon(sim: NQubitSimulator, oracle) -> List[bool]:
     measured = sim.measure_multiple_qubits(list(range(sim.dimension//2)))
     return measured
 
-
-
-if __name__ == '__main__':
+def example_n2_s11():
     # Example
-    N = 3 # Len of s
-
-
-    def gen_c_operator(control, target, operation, reverse=False):
-        proj_basis = KET_1
-        if reverse:
-            proj_basis = KET_0
-
-        size = abs(control - target) + 1
-
-        c_operator = 1
-        c_operator_complement = 1
-
-        for i in range(size):
-
-            complement_operator = np.eye(2)
-            operator = np.eye(2)
-
-            if i == control:
-                operator = proj_basis @ proj_basis.transpose()
-                complement_operator = (X @ proj_basis) @ (X @ proj_basis).transpose()
-
-            if i == target:
-                operator = operation
-
-            c_operator = tensordot_arb(c_operator, operator)
-            c_operator_complement = tensordot_arb(c_operator_complement, complement_operator)
-
-        c_operator += c_operator_complement
-
-        return c_operator
-
-    def tensordot_arb(*q_entities):
-        res_q_entity = 1
-        for i in range(len(q_entities)):
-            res_q_entity = np.kron(res_q_entity, q_entities[i])
-        return res_q_entity
-
-
-    oracle = tensordot_arb(gen_c_operator(0, 3, X), np.eye(2), np.eye(2))
-    oracle = tensordot_arb(np.eye(2), np.eye(2), gen_c_operator(0, 3, X)) @ oracle
-
+    N = 2  # Len of s = '11'
     measured_y = set()
 
-    ITER_COUNT = N*5
+    # Oracle for s = 11. Taken from:
+    # https://github.com/Qiskit/textbook/blob/main/notebooks/ch-algorithms/simon.ipynb.
+
+    oracle = CNOT(4, 0, 2) @ CNOT(4, 0, 3) @ CNOT(4, 1, 2) @ CNOT(4, 1, 3)
+    ITER_COUNT = 1024
+    m = defaultdict(int)
 
     for i in range(ITER_COUNT):
         sim = NQubitSimulator(N * 2)
         result = simon(sim, oracle)
-        measured_y.add(''.join(map(str,result))) # Convert list to str ex: [1, 0, 1] -> '101'
+        if result == [0, 0]:
+            continue
+        measured_y.add(''.join(map(str, result)))  # Convert list to str ex: [1, 0, 1] -> '101'
+        m[''.join(map(str, result))] += 1
 
-    measured_y.remove('000')
-    # Print user-friendly SLQ:
-    print(f'Present SLQ by running: {ITER_COUNT}')
-    for y in measured_y:
-        s_idxs = [f's{i}' for i in range(N)]
-        res = ''
-        for idx, bit in enumerate(y):
-            if bit == '1':
-                res += f'{s_idxs[idx]} + '
+    print(measured_y)
+    print(m)
+    return m['11']
 
-        res = res.rstrip(' + ') + ' = 0'
-        print(res)
 
+def example_n3_s100():
+    # Example
+    N = 3  # Len of s = '100'
+    measured_y = set()
+
+    # Oracle for s = 100. Taken from:
+    # https://quantum-ods.github.io/qmlcourse/book/qcalgo/ru/simon_algorithm.html
+
+    oracle = CNOT(6, 0, 3)
+    ITER_COUNT = 1024
+    m = defaultdict(int)
+
+    for i in range(ITER_COUNT):
+        sim = NQubitSimulator(N * 2)
+        result = simon(sim, oracle)
+        if result == [0, 0]:
+            continue
+        measured_y.add(''.join(map(str, result)))  # Convert list to str ex: [1, 0, 1] -> '101'
+        m[''.join(map(str, result))] += 1
+
+    print(measured_y)
+    print(m)
+    return m['100']
+
+
+if __name__ == '__main__':
+    example_n2_s11()
+    example_n3_s100()
 
 
 
