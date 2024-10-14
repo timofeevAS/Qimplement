@@ -85,47 +85,10 @@ def generate_oracle_simon(N, s):
     - s: Hidden string used for the periodic function f(x) = f(x ⊕ s).
 
     Returns:
-    - Matrix of 2^(N+1) x 2^(N+1), describes Oracle.
+    - Matrix of 2^(2N) x 2^(2N), describes Oracle.
     """
-    matrix_size = 2 ** (N + 1)
-    oracle_matrix = np.zeros((matrix_size, matrix_size), dtype=int)
-
-    # Storage visited x
-    visited = set()
-
-    # Iterate all x:
-    for x in itertools.product([0, 1], repeat=N):
-        x = np.array(x)
-        x_tuple = tuple(x)
-
-        if x_tuple in visited:
-            continue
-
-        # Calculate 2nd point: x ⊕ s
-        x_xor_s = x ^ s
-        x_xor_s_tuple = tuple(x_xor_s)
-
-        # Mark both points as visited.
-        visited.add(x_tuple)
-        visited.add(x_xor_s_tuple)
-
-        # f_x random value
-        f_x = np.random.randint(2)
-
-        for y in [0, 1]:
-            # Input index for x and y
-            input_index = int(''.join(map(str, x)) + str(y), 2)
-            # Output index for x and y ⊕ f(x)
-            output_index = int(''.join(map(str, x)) + str(y ^ f_x), 2)
-            oracle_matrix[input_index][output_index] = 1
-
-            # Input index for x ⊕ s and y
-            input_index_xor_s = int(''.join(map(str, x_xor_s)) + str(y), 2)
-            # Output index for x ⊕ s and y ⊕ f(x)
-            output_index_xor_s = int(''.join(map(str, x_xor_s)) + str(y ^ f_x), 2)
-            oracle_matrix[input_index_xor_s][output_index_xor_s] = 1
-
-    return oracle_matrix
+    # TODO Old version isnt correct. Idk how to implement this now.
+    pass
 
 if __name__ == '__main__':
     # Example
