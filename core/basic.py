@@ -64,7 +64,6 @@ def RX(angle):
         return rotation_matrix
 
 # Bell states
-# Функция для вычисления состояния Белла
 def bell_state(state_type='phi_plus'):
     # Kroneker product for get bell states
 
