@@ -60,10 +60,10 @@ if __name__ == '__main__':
 
 
     # Example of Deutsch-Jozsa algorithm for N = 3 with Oracle (const ONE)
-    def bool_and(x) -> bool:
+    def bool_true(x) -> bool:
         return True
 
-    oracle = generate_oracle_deutsch_jozsa(2, bool_and)
+    oracle = generate_oracle_deutsch_jozsa(2, bool_true)
 
     print('Run with next Oracle (CONST TRUE):')
     print(np.array(oracle))
