@@ -52,9 +52,6 @@ def teleport(sim: NQubitSimulator):
     for i in range(sim.dimension):
         print(f'State {i}: {sim.get_qubit_state(i)}')
 
-
-
-
 if __name__ == '__main__':
     sim = NQubitSimulator(3)
     teleport(sim)
