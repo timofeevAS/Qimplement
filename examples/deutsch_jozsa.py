@@ -71,6 +71,20 @@ if __name__ == '__main__':
     sim = NQubitSimulator(3)
     print(f'Result: {deutsch_jozsa(sim, oracle)}')
 
+    # Example of Deutsch-Jozsa algorithm for N = 3 with Oracle (XOR)
+    def bool_xor(x) -> bool:
+        return x[0] != x[1]
+
+    oracle = generate_oracle_deutsch_jozsa(2, bool_xor)
+
+    print('Run with next Oracle (xor):')
+    print(np.array(oracle))
+
+    sim = NQubitSimulator(3)
+    print(f'Result: {deutsch_jozsa(sim, oracle)}')
+
+
+
 
 
 
