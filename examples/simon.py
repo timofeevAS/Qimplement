@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from core.basic import X, HN, PAULI_X
+from core.basic import X, HN, PAULI_X, KET_0, KET_1
 from core.oracle import generate_oracle_simon
 from core.simulator import NQubitSimulator
 
@@ -46,15 +46,52 @@ def simon(sim: NQubitSimulator, oracle) -> List[bool]:
 
 if __name__ == '__main__':
     # Example
-    N = 2 # Len of s
-    s = '11'
+    N = 3 # Len of s
 
-    sim = NQubitSimulator(N * 2)
-    oracle = generate_oracle_simon(N, s)
-    result = simon(sim, oracle)
 
-    print(f'Hidden binary period s: {s}')
-    print(f'Measured: {result}')
+    def gen_c_operator(control, target, operation, reverse=False):
+        proj_basis = KET_1
+        if reverse:
+            proj_basis = KET_0
+
+        size = abs(control - target) + 1
+
+        c_operator = 1
+        c_operator_complement = 1
+
+        for i in range(size):
+
+            complement_operator = np.eye(2)
+            operator = np.eye(2)
+
+            if i == control:
+                operator = proj_basis @ proj_basis.transpose()
+                complement_operator = (X @ proj_basis) @ (X @ proj_basis).transpose()
+
+            if i == target:
+                operator = operation
+
+            c_operator = tensordot_arb(c_operator, operator)
+            c_operator_complement = tensordot_arb(c_operator_complement, complement_operator)
+
+        c_operator += c_operator_complement
+
+        return c_operator
+
+    def tensordot_arb(*q_entities):
+        res_q_entity = 1
+        for i in range(len(q_entities)):
+            res_q_entity = np.kron(res_q_entity, q_entities[i])
+        return res_q_entity
+
+
+    oracle = tensordot_arb(gen_c_operator(0, 3, X), np.eye(2), np.eye(2))
+    oracle = tensordot_arb(np.eye(2), np.eye(2), gen_c_operator(0, 3, X)) @ oracle
+
+    for i in range(N*2):
+        sim = NQubitSimulator(N * 2)
+        result = simon(sim, oracle)
+        print(f'Measured {N}: {result}')
 
 
 
