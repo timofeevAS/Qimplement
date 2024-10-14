@@ -62,3 +62,19 @@ def RX(angle):
         rotation_matrix = np.array([[np.cos(angle / 2), -1j * np.sin(angle / 2)],
                                     [-1j * np.sin(angle / 2), np.cos(angle / 2)]])
         return rotation_matrix
+
+# Bell states
+# Функция для вычисления состояния Белла
+def bell_state(state_type='phi_plus'):
+    # Kroneker product for get bell states
+
+    if state_type == 'phi_plus':
+        return (1/np.sqrt(2)) * (KET_00 + KET_11)  # |Φ+⟩
+    elif state_type == 'phi_minus':
+        return (1/np.sqrt(2)) * (KET_00 - KET_11)  # |Φ-⟩
+    elif state_type == 'psi_plus':
+        return (1/np.sqrt(2)) * (KET_01 + KET_10)  # |Ψ+⟩
+    elif state_type == 'psi_minus':
+        return (1/np.sqrt(2)) * (KET_01 - KET_10)  # |Ψ-⟩
+    else:
+        raise ValueError("Invalid Bell state type. Choose from 'phi_plus', 'phi_minus', 'psi_plus', 'psi_minus'.")
