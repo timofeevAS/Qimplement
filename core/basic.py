@@ -1,5 +1,4 @@
 import numpy as np
-from qiskit.transpiler.passes import VF2Layout
 
 '''
 numpy vector describes ket zero: |0>
