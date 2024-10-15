@@ -312,24 +312,20 @@ class NQubitSimulator:
     def get_qubit_state(self, idx: int):
         if idx < 0 or idx >= self.dimension:
             raise ValueError(f"Invalid qubit index. Must be in range [0; {self.dimension}).")
-
-        # Инициализируем проекторы для |0> и |1> состояний
-        projector_0 = np.eye(1)  # Начальная единичная матрица для проектора на |0>
-        projector_1 = np.eye(1)  # Начальная единичная матрица для проектора на |1>
+        projector_0 = np.eye(1)
+        projector_1 = np.eye(1)
 
         for i in range(self.dimension):
             if i == idx:
-                projector_0 = np.kron(projector_0, P_0)  # Проектор на |0> для кубита idx
-                projector_1 = np.kron(projector_1, P_1)  # Проектор на |1> для кубита idx
+                projector_0 = np.kron(projector_0, P_0)
+                projector_1 = np.kron(projector_1, P_1)
             else:
-                projector_0 = np.kron(projector_0, np.eye(2))  # Для остальных кубитов — единичная матрица
+                projector_0 = np.kron(projector_0, np.eye(2))
                 projector_1 = np.kron(projector_1, np.eye(2))
 
-        # Применяем проекторы к текущему состоянию
         projected_state_0 = projector_0 @ self.state
         projected_state_1 = projector_1 @ self.state
 
-        # Вычисляем вероятности для |0> и |1>
         prob_0 = np.abs(np.vdot(projected_state_0, projected_state_0))
         prob_1 = np.abs(np.vdot(projected_state_1, projected_state_1))
 
