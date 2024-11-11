@@ -53,7 +53,7 @@ PAULI_Y = np.array([[0, -1j], [1j, 0]])
 
 PAULI_Z = np.array([[1, 0], [0, -1]])
 
-CNOT = np.array([[1, 0, 0, 0],
+CNOT_matr = np.array([[1, 0, 0, 0],
                  [0, 1, 0, 0],
                  [0, 0, 0, 1],
                  [0, 0, 1, 0]])

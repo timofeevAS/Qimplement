@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from core.basic import X, HN, PAULI_X, KET_0, KET_1, H, CNOT, PAULI_Z, RX
+from core.basic import X, HN, PAULI_X, KET_0, KET_1, H, CNOT, PAULI_Z, RX, CNOT_matr
 from core.oracle import generate_oracle_simon
 from core.simulator import NQubitSimulator
 
@@ -17,13 +17,13 @@ def teleport(sim: NQubitSimulator):
     # Number of qubits = 3
 
     # Step 0 optional (rotate with Rx)
-    sim.apply_single_qubit_gate(RX(np.pi/4), 0)
+    sim.apply_single_qubit_gate(RX(np.pi/6), 0)
 
     # Step 1
     sim.apply_single_qubit_gate(H, 1) # Step 1 Hadamard gate for 2nd (1) qubit.
 
     # Step 2
-    sim.apply_n_gates(np.eye(2), CNOT) # Step 2
+    sim.apply_n_gates(np.eye(2), CNOT_matr) # Step 2
 
     # Step 3
     # Print 'states'
@@ -32,7 +32,7 @@ def teleport(sim: NQubitSimulator):
         print(f'State {i}: {sim.get_qubit_state(i)}')
 
     # Apply Step 3 gate
-    sim.apply_n_gates(CNOT, np.eye(2))
+    sim.apply_n_gates(CNOT_matr, np.eye(2))
 
     # Step 4
     sim.apply_n_gates(H, np.eye(2), np.eye(2))

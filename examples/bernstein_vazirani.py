@@ -37,8 +37,8 @@ def bernstein_vazirani(sim: NQubitSimulator, oracle) -> List[int]:
 
 if __name__ == '__main__':
     # Example
-    N = 3 # Len of s
-    s = [1, 0, 1]
+    s = [1, 0, 1, 0]
+    N = len(s)  # Len of s
 
     sim = NQubitSimulator(N + 1)
     oracle = generate_oracle_bernstein_vazirani(N, s)
