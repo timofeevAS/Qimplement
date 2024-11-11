@@ -3,7 +3,7 @@ import itertools
 
 from core.basic import H, KET_0, PAULI_X, PAULI_Y, PAULI_Z, CNOT, P_0, P_1
 from core.interface import QubitInterface, QuantumDevice
-
+from core.operator import qft
 
 
 class SimulatedQubit(QubitInterface):
@@ -345,3 +345,17 @@ class NQubitSimulator:
             self.apply_single_qubit_gate(gate_if_1, target_qubit_idx)
         else:
             raise ValueError(f"Invalid measured value {measured_value}. Must be 0 or 1.")
+
+    def apply_qft(self):
+        """
+        Apply the Quantum Fourier Transform (QFT) to the entire system.
+        """
+        qft_matrix = qft(self.dimension)  # create QFT for the current number of qubits
+        self.state = qft_matrix @ self.state
+
+    def apply_qft_dagger(self):
+        """
+        Apply the inverse Quantum Fourier Transform (QFT†) to the entire system.
+        """
+        qft_dagger_matrix = qft_dagger(self.dimension)  # create QFT† for the current number of qubits
+        self.state = qft_dagger_matrix @ self.state
