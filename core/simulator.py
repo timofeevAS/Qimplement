@@ -3,8 +3,44 @@ import itertools
 
 from core.basic import H, KET_0, PAULI_X, PAULI_Y, PAULI_Z, CNOT, P_0, P_1
 from core.interface import QubitInterface, QuantumDevice
-from core.operator import qft
 
+def qft(n: int):
+    """
+    Generate the QFT matrix for n qubits.
+
+    Args:
+    - n (int): The number of qubits.
+
+    Returns:
+    - QFT matrix (numpy array)
+    """
+    N = 2 ** n
+    qft_matrix = np.zeros((N, N), dtype=complex)
+
+    omega = np.exp(2j * np.pi / N)
+    for j in range(N):
+        for k in range(N):
+            qft_matrix[j, k] = omega ** (j * k)
+
+    # Normalize the matrix by dividing by sqrt(N)
+    qft_matrix /= np.sqrt(N)
+    return qft_matrix
+
+
+def qft_dagger(n: int):
+    """
+    Generate the inverse QFT (QFT†) matrix for n qubits.
+
+    Args:
+    - n (int): The number of qubits.
+
+    Returns:
+    - QFT† matrix (numpy array)
+    """
+    # Получаем обычную QFT и берём её комплексно сопряжённое и транспонированное
+    qft_matrix = qft(n)
+    qft_dagger_matrix = np.conjugate(qft_matrix).T
+    return qft_dagger_matrix
 
 class SimulatedQubit(QubitInterface):
     def __init__(self):
