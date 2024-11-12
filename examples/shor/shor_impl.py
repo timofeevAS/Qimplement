@@ -1,3 +1,4 @@
+import os
 import random
 from typing import List
 import numpy as np
@@ -86,7 +87,7 @@ def a_mod_21(a: int):
 def quantum_find_order(x):
     """
     Quantum Shor Algorithm
-    Circuit: TODO...
+    Circuit: https://physlab.org/wp-content/uploads/2023/05/Shor_s_Algorithm_23100113_Fin.pdf
     """
     N=7
     M=5
@@ -133,44 +134,50 @@ def run_shor(n):
         return calc_base(n)[0]
 
     if not n == 21:
-        raise Exception("This implementation doesn't factor this number yet")
+        raise Exception("Invalid number for this implementation.")
 
-    pick_pool = [i for i in range(2, 21)]
+    pool = list(range(2,21))
     while True:
         try:
-            x = random.choice(pick_pool)
-            pick_pool.remove(x)
-            print(f"Randomly picked number {x}")
+            x = random.choice(pool)
+            pool.remove(x)
+            print(f"Popped number {x}")
 
             gcd_value = gcd(x, n)
-            print(f"gcd({x}, {n}) = {gcd_value}")
+            print(f"gcd({x}, {n}): {gcd_value}")
 
             if gcd_value > 1:
                 return gcd_value, n // gcd_value
 
-            print("Provided number will be factorised with quantum computation")
+            print("Quantum processing.")
 
-            r = quantum_find_order(x)
-            print(f"Period for {x}^n mod 21 is {r}")
-            if r % 2 != 0:
-                raise Exception("Period value is odd, let's pick another number")
+            a = quantum_find_order(x)
+            print(f"Period {x}^n mod 21 is {a}")
+            if a % 2 != 0:
+                raise Exception("Period value is odd")
 
-            guess1 = x ** (r // 2) - 1
-            guess2 = x ** (r // 2) + 1
+            guess1 = x ** (a // 2) - 1
+            guess2 = x ** (a // 2) + 1
             if 21 in [gcd(guess1, n), gcd(guess2, n)]:
-                raise Exception("One of the factors is 21, let's pick another number")
+                raise Exception("Error via picking number (both dummies)")
             return gcd(n, guess1), gcd(n, guess2)
         except Exception as e:
             print(str(e))
 
 if __name__ == '__main__':
+    DEBUG = False
     impl = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 21]
-
+    results = []
     for digit in impl:
+        answer=f'{digit}: {"* ".join([str(i) for i in sorted(run_shor(digit))])}'
+        results.append(answer)
         try:
-            print(f"Answer for {digit}: {'* '.join([str(i) for i in sorted(run_shor(digit))])}")
+            print(answer)
         except:
             print(f'Digit not impl: {digit}')
+
+    for res in results:
+        print(res)
 
 
 
