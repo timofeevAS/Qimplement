@@ -47,40 +47,21 @@ def gen_swap(size):
 
     return operator
 
-def a_mod_21(a: int):
-    I = np.eye(2)
-    
-    if a == 2:
-        operator = tensormany(KET_0 @ KET_0.transpose(), I, I, I, I) + \
-                   tensormany(KET_1 @ KET_1.transpose(), I, I, gen_swap(2))
+def shor_oracle(x, n):
+    """
+    Oracle for x mod n:
 
-        operator = operator @ \
-                   (tensormany(KET_0 @ KET_0.transpose(), I, I, I, I) +
-                    tensormany(KET_1 @ KET_1.transpose(), gen_swap(2), I, I))
+    |y> -> |xy mod n>
+    """
 
-        operator = operator @ tensormany(I, I, gen_c_operator(2, 0, X)) @ gen_c_operator(4, 0, X)
-        operator = operator @ tensormany(I, I, I, gen_swap(2))
-        operator = operator @ tensormany(gen_swap(4), I)
-        operator = operator @ tensormany(I, I, gen_swap(2), I)
-        operator = operator @ tensormany(I, gen_swap(2), I, I)
-
-        return operator
-    elif a == 4:
-        return gen_swap(5) @ tensormany(I, I, gen_swap(3))
-    elif a == 5:
-        return tensormany(X, I, X, I, X) @ tensormany(I, I, gen_swap(3)) @ gen_swap(5)
-    elif a == 8:
-        return tensormany(gen_swap(4), I)
-    elif a == 13:
-        return tensormany(I, I, X, I, X)
-    elif a == 16:
-        return tensormany(I, I, gen_swap(3)) @ gen_swap(5)
-    elif a == 17:
-        return tensormany(X, I, X, I, X) @ tensormany(I, I, gen_swap(3)) @ tensormany(gen_swap(3), I, I)
-    elif a == 20:
-        return tensormany(X, I, X, I, X)
-    else:
-        raise Exception(f"a: {a} not implement.")
+    n_bits = int(np.ceil(np.log2(n)))
+    result = np.zeros(shape=(2 ** n_bits, 2 ** n_bits), dtype=complex)
+    for y_i in range(2 ** n_bits):
+        if y_i >= n:
+            result[y_i, y_i] = 1
+        else:
+            result[y_i, (x * y_i) % n] = 1
+    return result
 
 def quantum_find_order(x):
     """
@@ -94,7 +75,7 @@ def quantum_find_order(x):
     for i in range(N):
         sim.apply_single_qubit_gate(i, H)
     sim.apply_single_qubit_gate(X, N)
-    oracle_matrix = a_mod_21(x)
+    oracle_matrix = shor_oracle(x, 21)
     for i in range(N):
         mod = tensormany(*[I for _ in range(i)],
                             KET_1 @ KET_1.transpose(),
@@ -131,10 +112,7 @@ def run_shor(n):
         print(f"Provided number is {base} ^ {power}")
         return calc_base(n)[0]
 
-    if not n == 21:
-        raise Exception("Invalid number for this implementation.")
-
-    pool = list(range(2,21))
+    pool = list(range(2,n))
     while True:
         try:
             x = random.choice(pool)
@@ -156,8 +134,6 @@ def run_shor(n):
 
             guess1 = x ** (a // 2) - 1
             guess2 = x ** (a // 2) + 1
-            if 21 in [gcd(guess1, n), gcd(guess2, n)]:
-                raise Exception("Error via picking number (both dummies)")
             return gcd(n, guess1), gcd(n, guess2)
         except Exception as e:
             print(str(e))
