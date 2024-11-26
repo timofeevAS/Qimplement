@@ -41,6 +41,9 @@ def HN(N: int):
 
 X = np.array([[0, 1], [1, 0]])
 
+Z = np.array([[1, 0],
+                    [0, -1]])
+
 KET_PLUS = (KET_0 + KET_1) / np.sqrt(2)
 
 KET_MINUS = (KET_0 - KET_1) / np.sqrt(2)
@@ -114,3 +117,46 @@ def CNOT(N, c, t):
     CNOT_matrix = term1 + term2
 
     return CNOT_matrix
+
+def TOFFOLI(N, controls, target):
+    """
+    Создаёт матрицу Тоффоли-гейта для N-кубитной системы.
+    controls: список из 2 управляющих кубитов
+    target: целевой кубит
+    """
+    if len(controls) != 2:
+        raise ValueError("Toffoli gate requires exactly 2 control qubits.")
+    if target in controls:
+        raise ValueError("Target qubit cannot be one of the control qubits.")
+    if not (0 <= controls[0] < N and 0 <= controls[1] < N and 0 <= target < N):
+        raise ValueError("Control and target qubits must be within range [0, N).")
+
+    # Сортируем управляющие кубиты для упрощения
+    c1, c2 = sorted(controls)
+    t = target
+
+    # Размерность всей системы
+    dim = 2**N
+
+    # Матрица Тоффоли (начинаем с единичной)
+    TOFFOLI_matrix = np.eye(dim)
+
+    # Индексы для работы с двоичными представлениями
+    for i in range(dim):
+        binary = format(i, f'0{N}b')  # Преобразуем индекс в двоичное число
+        qubits = [int(bit) for bit in binary]
+
+        # Если оба управляющих кубита равны 1, инвертируем целевой кубит
+        if qubits[c1] == 1 and qubits[c2] == 1:
+            qubits[t] = 1 - qubits[t]  # Инверсия целевого кубита
+
+        # Преобразуем обратно в индекс
+        new_index = int(''.join(map(str, qubits)), 2)
+
+        # Задаём соответствие между входным и выходным состоянием
+        TOFFOLI_matrix[i, :] = 0  # Обнуляем строку
+        TOFFOLI_matrix[i, new_index] = 1
+
+    return TOFFOLI_matrix
+
+
