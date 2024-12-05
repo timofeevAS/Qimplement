@@ -131,9 +131,9 @@ def no_correction(P=0.05, debug = False):
     finite_state = sim.get_qubit_state_raw(0)
     if np.isclose(finite_state['|0>'], inital_state['|0>'], 0.0001) and np.isclose(finite_state['|1>'],
                                                                                  inital_state['|1>'], 0.0001):
-        return (True, error_count)
+        return True, error_count
     else:
-        return (False, error_count)
+        return False, error_count
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
