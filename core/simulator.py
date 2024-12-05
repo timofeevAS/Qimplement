@@ -345,6 +345,28 @@ class NQubitSimulator:
         # Apply the final operation to the quantum state
         self.state = operation @ self.state
 
+    def get_qubit_state_raw(self, idx: int):
+        if idx < 0 or idx >= self.dimension:
+            raise ValueError(f"Invalid qubit index. Must be in range [0; {self.dimension}).")
+        projector_0 = np.eye(1)
+        projector_1 = np.eye(1)
+
+        for i in range(self.dimension):
+            if i == idx:
+                projector_0 = np.kron(projector_0, P_0)
+                projector_1 = np.kron(projector_1, P_1)
+            else:
+                projector_0 = np.kron(projector_0, np.eye(2))
+                projector_1 = np.kron(projector_1, np.eye(2))
+
+        projected_state_0 = projector_0 @ self.state
+        projected_state_1 = projector_1 @ self.state
+
+        amplitude_0 = (np.vdot(projected_state_0, projected_state_0))
+        amplitude_1 = (np.vdot(projected_state_1, projected_state_1))
+
+        return {'|0>': amplitude_0, '|1>': amplitude_1}
+
     def get_qubit_state(self, idx: int):
         if idx < 0 or idx >= self.dimension:
             raise ValueError(f"Invalid qubit index. Must be in range [0; {self.dimension}).")
