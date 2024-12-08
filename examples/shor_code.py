@@ -135,7 +135,7 @@ def no_correction(P=0.05, debug = False):
     else:
         return False, error_count
 
-if __name__ == '__main__':
+def shor9_withplot():
     import matplotlib.pyplot as plt
 
     p = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
@@ -158,7 +158,8 @@ if __name__ == '__main__':
         p_e.append(failure_count / total_rounds)  # Probability of error for total rounds.
         p_e_nc.append(failure_count2 / total_rounds)
 
-        print(f'finished {P} with P_e: {failure_count / total_rounds} ({failure_count}/{total_rounds}) || P_e_nc: {failure_count2 / total_rounds}  ({failure_count2}/{total_rounds})')
+        print(
+            f'finished {P} with P_e: {failure_count / total_rounds} ({failure_count}/{total_rounds}) || P_e_nc: {failure_count2 / total_rounds}  ({failure_count2}/{total_rounds})')
 
     plt.plot(p, p_e, marker='o', linestyle='-', color='b')
     plt.plot(p, p_e_nc, marker='o', linestyle='-', color='r')
@@ -167,5 +168,8 @@ if __name__ == '__main__':
     plt.title('Зависимость вероятности ошибки от P')  # Заголовок графика
     plt.grid(True)  # Включение сетки
     plt.show()  # Отображение графика
+
+if __name__ == '__main__':
+    shor9_withplot()
 
 
