@@ -1,5 +1,6 @@
 import random
 import sys, os
+from zipfile import error
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import numpy as np
@@ -54,9 +55,11 @@ def shor9(P=0.05, debug=False):
 
     error_count = 0
     # Random inverse qubit with PAULI [X or Z] (Simulate Error)
-    for idx in range(0, 8):
+    for idx in range(0, sim.dimension):
         if random.random() <= P:
             error_count += 1
+            if error_count > 1:
+                return False, error_count
             if debug:
                 print(f'Error in {idx}')
             pauli_x_error = random.random() > 0.5
