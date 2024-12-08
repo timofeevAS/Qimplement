@@ -8,7 +8,7 @@ from core.basic import RX, CNOT, I, H, TOFFOLI, X, Z, HN
 from core.simulator import NQubitSimulator
 import concurrent.futures
 
-def x_correction(P=0.05, debug=False):
+def z_correction(P=0.05, debug=False):
     # Prepare system:
     # 3 qubits. (One of them target PHI)
     sim = NQubitSimulator(3)
@@ -110,7 +110,7 @@ def compute_failure_probability(P, total_rounds=500):
         return (P, 0, 0)
 
     for i in range(total_rounds):
-        correct = x_correction(P=P)  # True if error correction successful, False if failure.
+        correct = z_correction(P=P)  # True if error correction successful, False if failure.
         if not correct[0]:
             failure_count += 1
 
